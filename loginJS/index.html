@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login Ajax</title>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+</head>
+
+<body>
+    First name: <input type="email" id="Email" value="test@eduge.ch" required><br>
+    Last name: <input type="password" id="Password" value="toor" required><br>
+    <button onclick="passwordCheck()">Login</button>
+</body>
+<script type="text/javascript">
+    var erreur = "";
+
+    window.onload = function () {
+        document.getElementById("Email").focus();
+    }
+
+    function passwordCheck() {
+        erreur = "";
+        var pswd = document.getElementById("Password").value;
+
+        if (pswd == null || pswd == "" || pswd.length < 6) {
+            document.getElementById("Password").style.borderColor = "red";
+            erreur = "Le mot de passe contient moins de 6 charactères."
+            document.getElementById("Password").focus();
+            emailCheck();
+            return false;
+        } else {
+            document.getElementById("Password").style.borderColor = "gray";
+            emailCheck();
+        }
+    }
+
+    function emailCheck() {
+        if (/^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/.test(document.getElementById("Email").value)) {
+            document.getElementById("Email").style.borderColor = "gray";
+            alertCheck();
+            return (true);
+        } else {
+            document.getElementById("Email").style.borderColor = "red";
+            erreur += " L'addresse email n'est pas correct.";
+            document.getElementById("Email").focus();
+            alertCheck();
+            return (false);
+        }
+    }
+
+    function alertCheck() {
+        if (!(erreur == "")) {
+            alert(erreur);
+        } else {
+            alert("Success");
+        }
+    }
+
+</script>
+
+</html>

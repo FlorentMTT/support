@@ -1,0 +1,122 @@
+    <!DOCTYPE html>
+    <html lang="fr">
+        <head>
+            <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+            <script src="https://code.jquery.com/jquery-3.4.1.js"></script> 
+            <style>
+                .errormsg{
+                    color: darkorchid;
+                    font-weight: 800;
+                }
+            </style>       
+        </head>
+
+        <body>
+            <h1>Démonstration d'une validation de données d'un formulaire en Web 2</h1>
+
+            <p>Mettez le debugger en marche dans Visual Studio Code, et placez un point d'arrêt sur la première ligne de code dans le fichier validateLogin.php</p>
+            <p>Une fois l'appel Ajax exécuté depuis le javascript, le debugger s'arrêtera et exécutez pas à pas.</p>
+            
+            <p>Ouvrez également le debugger du navigateur. Vous allez debugger le code javascript qui est exécuté au sein de cette page.</p>
+            <p>Vous allez debugger le code javascript qui est exécuté au sein de cette page.</p>
+
+            <p id="errorLogin" class="errormsg">L'utilisateur et/ou le mot de passe sont incorrectes.</p>
+            <p id="errorParam" class="errormsg">Problème rencontrés sur le serveur lors de la vérification des données.</p>
+
+            <!-- Les données de notre formulaire, mais sans formulaire au sens <form> 
+                 Ici on va utiliser les champs en utilisant leurs ids.
+            -->
+            <span>Nom d'utilisateur: </span><input type="text" id="username"/>
+            <br/>
+            <span>Mot de passe: </span><input type="password" id="pswd" />
+            <input type="button" id="send" value="Login" />
+        </body>
+        <script>
+            // Equivalent au onload du tag body
+            // Cette fonction est appelée une fois le document 
+            // complètement chargé par le navigateur
+            $(document).ready(function() {
+                // On place une call-back sur le click 
+                // du bouton Login en utilisant son id
+                $('#send').click(validateLogin);
+                // On cache tous les éléments pour la classe errormsg
+                $('.errormsg').hide();
+            });
+
+            /**
+            * On va valider les données du formulaire de saisie
+            * et faire un appel ajax pour valider l'authentification
+            */
+            function validateLogin(event){
+                // Prevent form submission
+                if (event)
+                    event.preventDefault();
+
+                // On va vérifier que les champs sont remplis
+                var user = $('#username').val();
+                // Le mot de passe
+                var pswd = $('#pswd').val();
+
+                if (user.length == 0){
+                    // On met par exemple le broder en rouge
+                    $("#username").css("border-color", "red");
+                    // Mettre le focus sur le champ mot de passe
+                    $("#username").focus(); 
+                    // Fail, pas la peine de continuer
+                    return;
+                }
+                else
+                    $("#username").css("border-color", "");
+
+
+                if (pswd.length == 0){
+                    // On met par exemple le border en rouge
+                    $("#pswd").css("border-color", "red");
+                    // Mettre le focus sur le champ mot de passe
+                    $("#pswd").focus(); 
+                    // Fail, pas la peine de continuer
+                    return;
+                }
+                else
+                    $("#pswd").css("border-color", "");
+
+                // Maintenant, on peut faire l'appel Ajax
+                $.ajax({
+                    method: 'POST', // La méthode utilisée pour passer les données en paramètres
+                    url: 'validateLogin.php',   // Le fichier appelé sur le serveur
+                    data: {'username': user, 'password': pswd}, // Les paramètres
+                    dataType: 'json',   // Le type de retour des données
+
+                    // success: Lorsque l'appel ajax est retourné sans erreur
+                    success: function (data) {
+                                switch(data.ReturnCode){
+                                    case 0 : // C'est tout bon
+                                        window.location = "./done.html";
+                                        break;
+                                    case 1 : // Paramètres invalides
+                                        // On affiche le message d'erreur
+                                        // et on le cache automatiquement après 3 secondes
+                                        $('#errorParam').show().delay(3000).fadeOut(1000);
+                                        break;
+                                    case 2 : // User et/ou mot de passe invalide
+                                        $('#errorLogin').show().delay(3000).fadeOut(1000);
+                                        break;
+                                }
+                    }, //#end success
+                    // error: Lorsqu'on a une erreur provenant de l'appel ajax
+                    // Ce n'est pas les erreurs qui proviennent du retour
+                    // de votre code php
+                    error: function (jqXHR) {
+                                msg = "Une erreur est survenue. Error : ";
+                                switch(jqXHR.status){
+                                      case 200 : msg = msg + jqXHR.status + " Le json retourné est invalide.";
+                                      break;
+                                      case 404 : msg = msg + jqXHR.status + " La page validateLogin.php est manquante.";
+                                      break;
+                                }
+                                alert(msg);
+                    } //#end error
+            });//#end ajax call
+        }//#end validateLogin
+        </script>
+</html>
